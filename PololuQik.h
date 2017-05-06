@@ -2,7 +2,7 @@
 #define PololuQik_h
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#include "wiring_private.h" // pinPeripheral() function
 
 // Commands
 
@@ -47,12 +47,12 @@
 #define QIK_CONFIG_MOTOR_M0_CURRENT_LIMIT_RESPONSE 10
 #define QIK_CONFIG_MOTOR_M1_CURRENT_LIMIT_RESPONSE 11
 
-class PololuQik : public SoftwareSerial
+class PololuQik
 {
   public:
-    PololuQik(unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin);
+    PololuQik(HardwareSerial& s, unsigned char resetPin);
 
-    void init(long speed = 9600);
+    void init();
 
     char getFirmwareVersion();
     byte getErrors();
@@ -66,12 +66,13 @@ class PololuQik : public SoftwareSerial
 
   protected:
     unsigned char _resetPin;
+    HardwareSerial& serial;
 };
 
 class PololuQik2s9v1 : public PololuQik
 {
   public:
-    PololuQik2s9v1(unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin) : PololuQik(receivePin, transmitPin, resetPin) {}
+    PololuQik2s9v1(HardwareSerial& s, unsigned char resetPin) : PololuQik(s, resetPin) {}
 
     void setM0Coast();
     void setM1Coast();
@@ -81,7 +82,7 @@ class PololuQik2s9v1 : public PololuQik
 class PololuQik2s12v10 : public PololuQik
 {
   public:
-    PololuQik2s12v10(unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin) : PololuQik(receivePin, transmitPin, resetPin) {}
+    PololuQik2s12v10(HardwareSerial& s, unsigned char resetPin) : PololuQik(s, resetPin) {}
 
     void setM0Brake(unsigned char brake);
     void setM1Brake(unsigned char brake);
